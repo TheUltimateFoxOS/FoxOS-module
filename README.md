@@ -25,6 +25,22 @@ make mac-img
 
 ```bash
 make run-bios
+make run-bios-local
 ```
 
 This command can be used to run the module in a virtual machine.
+
+## Debugging
+
+Make sure you have a working copy of the FoxOS source tree in the ~/FoxOS directory or override the default in the Makefile.
+
+To launch qemu in debug mode:
+```bash
+make run-bios-debug
+```
+
+To attach gdb to the running qemu (in the FoxOS directory):
+```bash
+make debug
+```
+Make sure to not enable the boot vm option. Also note that you can only debug the kernel in qemu.

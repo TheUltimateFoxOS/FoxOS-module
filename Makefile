@@ -5,6 +5,8 @@ QEMUFLAGS_BIOS = -machine q35 -smp 4 -drive file=foxos.img -m 1G -cpu qemu64 -se
 
 FOX_GCC_PATH=/usr/local/foxos-x86_64_elf_gcc
 
+FOXOS_PATH=$(HOME)/FoxOS
+
 build: kernel-headers
 	@-mkdir $(BUILDDIR)
 	@-mkdir $(OBJDIR)
@@ -14,10 +16,22 @@ build: kernel-headers
 img: build foxos.img
 	sh disk.sh $(FOX_GCC_PATH)
 
+img-local: build
+	make -C $(FOXOS_PATH) TOOLCHAIN_BASE=$(FOX_GCC_PATH) img
+	cp $(FOXOS_PATH)/foxos.img . -v
+
+	sh disk.sh $(FOX_GCC_PATH)
+
 mac-img: build foxos.img
 	sh mac-disk.sh $(FOX_GCC_PATH)
 
 run-bios: img
+	qemu-system-x86_64 $(QEMUFLAGS_BIOS)
+
+run-bios-debug: img-local
+	qemu-system-x86_64 $(QEMUFLAGS_BIOS) -S -s 
+
+run-bios-local: img-local
 	qemu-system-x86_64 $(QEMUFLAGS_BIOS)
 
 clean:
